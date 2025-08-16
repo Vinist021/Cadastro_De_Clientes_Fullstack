@@ -1,1 +1,6 @@
-com/cadastro/App.class
+com\cadastro\repository\EnderecoRepository.class
+com\cadastro\service\ClienteService.class
+com\cadastro\model\Cliente.class
+com\cadastro\repository\ClienteRepository.class
+com\cadastro\model\Endereco.class
+com\cadastro\controller\ClienteController.class
