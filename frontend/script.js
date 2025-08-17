@@ -2,8 +2,18 @@
 $('#inputCep').mask('00000-000');
 
 let clientes = [];
+
 //Carregar clientes já cadastrados
 carregarClientes(clientes);
+
+function carregarClientes(){
+    $.getJSON('http://localhost:8080/clientes', (response) => {
+        let clientes = response;
+        for(let cliente of clientes) {
+        addNovaLinha(cliente);
+        }
+    });
+}
 
 //Pesqusar endereco com base no CEP
 function pesquisarCEP() {
@@ -91,35 +101,35 @@ function salvar() {
     )
     {
         novoCliente = pegarInfosCliente();
-
-        addNovaLinha(novoCliente)
-        clientes.push(novoCliente);
-        document.getElementById('formClientes').reset();
+        
+        $.ajax({
+        url: 'http://localhost:8080/clientes',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(novoCliente),
+        success: (cliente) => {
+            addNovaLinha(cliente);
+            clientes.push(cliente);
+            document.getElementById('formClientes').reset();
+            }
+        });
     } 
     bloquearInputs();
-   
-}
-
-function carregarClientes(listaClientes) {
-    for(let cliente of listaClientes) {
-        addNovaLinha(cliente);
-    }
 }
 
 function pegarInfosCliente() {
-    const clienteInfos = 
-    {   
-        id: clientes.length + 1,
-        nomeCompleto: $('#inputNome').val() + ' ' + $('#inputSobrenome').val(),
-        cep: $('#inputCep').val(),
-        logradouro: $('#inputEndereco').val(),
-        numero: $('#inputNumero').val(),
-        bairro: $('#inputBairro').val(),
-        cidade: $('#inputCidade').val(),
-        estado: $('#inputEstado').val(),
-    }
-
-    return clienteInfos;
+    return {   
+        nome: $('#inputNome').val(),
+        sobrenome: $('#inputSobrenome').val(),
+        endereco: {
+            cep: $('#inputCep').val(),
+            logradouro: $('#inputEndereco').val(),
+            numero: $('#inputNumero').val(),
+            bairro: $('#inputBairro').val(),
+            cidade: $('#inputCidade').val(),
+            estado: $('#inputEstado').val()
+        }
+    };
 }
 
 function addNovaLinha(cliente) {
@@ -131,38 +141,38 @@ function addNovaLinha(cliente) {
     newRow.insertCell().appendChild(idNode);
 
     //inserir nome
-    nomeNode = document.createTextNode(cliente.nomeCompleto);
+    nomeNode = document.createTextNode(cliente.nome + ' ' + cliente.sobrenome);
     newRow.insertCell().appendChild(nomeNode);
 
     //inserir endereco
-    logradouro = cliente.logradouro;
-    numero = cliente.numero;
+    logradouro = cliente.endereco.logradouro;
+    numero = cliente.endereco.numero;
     enderecoNode = document.createTextNode(logradouro + ', ' + numero);
     var cellEndereco = newRow.insertCell();
     cellEndereco.className = 'd-none d-sm-table-cell';
     cellEndereco.appendChild(enderecoNode);
     
     //inserir cep
-    var cepNode = document.createTextNode(cliente.cep);
+    var cepNode = document.createTextNode(cliente.endereco.cep);
     var cellCep = newRow.insertCell();
     cellCep.className ='d-none d-sm-table-cell text-nowrap';
     cellCep.appendChild(cepNode);
 
     //inserir bairro
-    var bairroNode = document.createTextNode(cliente.bairro);
+    var bairroNode = document.createTextNode(cliente.endereco.bairro);
     var cellBairro = newRow.insertCell();
     cellBairro.className ='d-none d-xl-table-cell';
     cellBairro.appendChild(bairroNode);
 
     //inserir cidade
-    var cidadeNode = document.createTextNode(cliente.cidade);
+    var cidadeNode = document.createTextNode(cliente.endereco.cidade);
     var cellCidade = newRow.insertCell();
     cellCidade.className ='d-none d-lg-table-cell';
     cellCidade.appendChild(cidadeNode);
 
     //inserir estado
-    var cidadeNode = document.createTextNode(cliente.estado);
-    var cellCidade = newRow.insertCell();
-    cellCidade.className ='d-none d-md-table-cell';
-    cellCidade.appendChild(cidadeNode);
+    var estadoNode = document.createTextNode(cliente.endereco.estado);
+    var cellEstado = newRow.insertCell();
+    cellEstado.className ='d-none d-md-table-cell';
+    cellEstado.appendChild(estadoNode);
 }

@@ -1,5 +1,7 @@
 package com.cadastro.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -28,6 +30,7 @@ public class Cliente {
     private String sobrenome;
 
     @OneToOne(cascade = CascadeType.ALL)
+    @JsonManagedReference
     @JoinColumn(name = "endereco_id", referencedColumnName = "id")
     private Endereco endereco;
 

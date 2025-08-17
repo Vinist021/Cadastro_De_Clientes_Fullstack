@@ -1,5 +1,7 @@
 package com.cadastro.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,5 +39,6 @@ public class Endereco {
     private String estado;
 
     @OneToOne(mappedBy = "endereco")
+    @JsonBackReference
     private Cliente cliente;
 }
